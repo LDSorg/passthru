@@ -38,6 +38,16 @@ requestAsync({
       , jar: jar
       }).spread(function (resp, body) {
         console.log(body);
+
+        requestAsync({
+          url: testConfig.proxyUrl + '/api/restart'
+        , method: 'POST'
+        , json: { token: body.token }
+        , agent: testAgent
+        }).spread(function (resp, body) {
+
+          console.log(body);
+        });
       });
     });
   });
