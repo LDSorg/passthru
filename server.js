@@ -26,13 +26,13 @@ function login(auth, preset) {
     // username must be at least 4, password at least 8
     ['username', 'password'].every(function (k) {
       if ('string' !== typeof auth[k]) {
-        errmsg = k + " must be specified";
+        errmsg = { message: k + " must be specified" };
 
         return false;
       }
 
       if (auth[k].length < 4) {
-        errmsg = k + " is too short";
+        errmsg = { message: k + " is too short" };
 
         return false;
       }
@@ -94,7 +94,7 @@ function route(rest) {
     login(body).then(function (data) {
       res.send({ token: data.token, jar: data.jar });
     }, function (errmsg) {
-      res.error({ message: errmsg });
+      res.error({ message: errmsg && errmsg.message || errmsg });
     });
   });
 
