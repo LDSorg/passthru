@@ -3,27 +3,18 @@ PassThru
 
 This is a secure service for exchanging tokens for data
 
-* The server runs in an undisclosed region on an undisclosed
-* The server has key-only passphrase-protected non-root ssh access (with a separate sudo password)
-* The https access is restricted to trusted peer certificates only
-* The service stores credentials encrypted (AES256 cipher) in memory
-* The ids are hashed
-* No data is saved to disk (only in RAM)
-* The only way to gain access to this server is my first comprimising another computer with similar security in place.
-* The private key has never existed on the server itself, so even if the server is comprimised, there's no key
-
-If the server is rebooted, all data is completely lost.
-
 API
 ===
 
 The API can only be accesses via https using trusted peer certificates.
 
-### POST /api/init/ `{ "secret": "johndoe", "password }`
+#### POST /api/init/ `{ "secret": "cipher-passphrase" }`
 
+```json
 { "success": true }
+```
 
-### POST /api/login/ `{ "username": "johndoe", "password": "secret" }`
+#### POST /api/login/ `{ "username": "johndoe", "password": "secret" }`
 
 ```json
 { "token": "some-access-token"
@@ -31,7 +22,7 @@ The API can only be accesses via https using trusted peer certificates.
 }
 ```
 
-### POST /api/passthru/ `{ "token": "some-token" }`
+#### POST /api/passthru/ `{ "token": "some-token" }`
 
 ```json
 { "jar": { }
@@ -46,3 +37,18 @@ All the service does is transpart a requestjs compatible cookie jar between host
 
 The receiving system should not store the user's username or password at all,
 but should store received token in an encrypted.
+
+Security
+===
+
+* The server runs in an undisclosed region on an undisclosed service
+* The server has key-only passphrase-protected non-root ssh access (with a separate sudo password)
+* The https access is restricted to trusted peer certificates only
+* No data is saved to disk (only in RAM)
+* Even the data in RAM is encrypted (AES256 cipher)
+* The master cipher key has never existed on the server itself, so even with physical access it could not be recovered
+* Each set of credentials is independently encrypted with a unique key (which is not stored on the server)
+* The server's IP address can only be discovered by first compromising another server with similar security in place.
+* In the event of a power failure, all of the data would be lost.
+
+It's pretty safe.
