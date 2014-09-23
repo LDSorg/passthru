@@ -1,8 +1,8 @@
 'use strict';
 
-var db = require('./db')
-  , config = require('./config')
-  , testConfig = require('./test-config')
+var db = require('../db')
+  , config = require('../config')
+  , testConfig = require('../test-config')
   , d
   , opts = { secret: testConfig.secret, salt: config.salt }
   , fs = require('fs')

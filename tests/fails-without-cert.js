@@ -3,7 +3,7 @@
 var PromiseA = require('bluebird').Promise
   , request = require('request')
   , requestAsync = PromiseA.promisify(request)
-  , testConfig = require('./test-config')
+  , testConfig = require('../test-config')
   ;
 
 requestAsync({

@@ -3,9 +3,9 @@
 var PromiseA = require('bluebird').Promise
   , request = require('request')
   , requestAsync = PromiseA.promisify(request)
-  , testConfig = require('./test-config')
-  , JarSON = require('./jarson')
-  , testAgent = require('./test-agent')
+  , testConfig = require('../test-config')
+  , JarSON = require('../jarson')
+  , testAgent = require('../test-agent')
   ;
 
 requestAsync({

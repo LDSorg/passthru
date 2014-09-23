@@ -3,9 +3,9 @@
 var PromiseA = require('bluebird').Promise
   , request = require('request')
   , requestAsync = PromiseA.promisify(request)
-  , testConfig = require('./test-config')
-  , JarSON = require('./jarson')
-  , testAgent = require('./test-agent')
+  , testConfig = require('../test-config')
+  , JarSON = require('../jarson')
+  , testAgent = require('../test-agent')
   ;
 
 requestAsync({
@@ -14,6 +14,11 @@ requestAsync({
   , json: { username: testConfig.username, password: testConfig.password }
   , agent: testAgent
   }).spread(function (resp, body) {
+    if (body.error) {
+      console.error('Error with login');
+      console.error(body.error);
+      return;
+    }
     var jar = JarSON.fromJSON(body.jar)
       ;
 
