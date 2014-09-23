@@ -10,6 +10,14 @@ var connect = require('connect')
   , PromiseA = require('bluebird').Promise
   ;
 
+function saveAndQuit() {
+  db.save().then(function () {
+    process.exit();
+  }, function () {
+    process.exit();
+  });
+}
+
 function login(auth, preset) {
   return new PromiseA(function (resolve, reject) {
     var errmsg
@@ -107,6 +115,11 @@ function route(rest) {
       res.error({ message: errmsg });
     });
   });
+
+  rest.post('/api/restart', requireInit, function (req, res) {
+    res.send({ success: true });
+    saveAndQuit();
+  });
 }
 
 app.use(require('body-parser').json({
@@ -121,15 +134,7 @@ app.use(require('connect-send-json').json());
 app.use(require('connect-send-error').error());
 app.use(urlrouter(route));
 
-app.listen(8080, function () {
-  console.log(8080);
-});
-
-process.on('uncaughtException', function () {
-  db.save().then(function () {
-    process.exit();
-  }, function () {
-    process.exit();
-  });
-});
-
+//process.on('uncaughtException', saveAndQuit);
+module.exports.create = function (/*server*/) {
+  return PromiseA.resolve(app);
+};
