@@ -78,7 +78,6 @@ function route(rest) {
       return;
     }
 
-    console.log(body.secret, config.shadow);
     if (!DB.test(body.secret, config.shadow)) {
       res.error({ message: "bad secret" });
       return;
