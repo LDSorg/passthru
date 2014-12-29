@@ -1,0 +1,3 @@
+[submodule "ssl-cert-gen"]
+	path = ssl-cert-gen
+	url = https://github.com/coolaj86/nodejs-ssl-trusted-peer-example.git

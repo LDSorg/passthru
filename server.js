@@ -13,7 +13,8 @@ var connect = require('connect')
 function saveAndQuit() {
   db.save().then(function () {
     process.exit();
-  }, function () {
+  }).catch(function (e) {
+    console.error(e);
     process.exit();
   });
 }
