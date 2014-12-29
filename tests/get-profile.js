@@ -22,7 +22,7 @@ requestAsync({
     var jar = JarSON.fromJSON(body.jar)
       ;
 
-    requestAsync({
+    return requestAsync({
       url: 'https://www.lds.org/directory/services/ludrs/mem/current-user-info/'
     , jar: jar
     }).spread(function (resp, body) {

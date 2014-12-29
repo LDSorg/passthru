@@ -13,11 +13,8 @@ requestAsync({
 , json: { secret: testConfig.secret }
 , agent: testAgent
 }).spread(function (resp, body) {
-    if (body.error) {
-      console.error('Error with init');
-      console.error(body.error);
-      return;
-    }
-
     console.log(body);
+  }).error(function (err) {
+    console.error('ERROR');
+    console.error(err);
   });
