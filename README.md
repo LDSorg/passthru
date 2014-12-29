@@ -75,7 +75,7 @@ On OS X this is fairly straight forward:
 
 ```bash
 # OS X
-launchctl unload /System/Library/LaunchAgents/org.openbsd.ssh-agent.plist
+launchctl unload -w /System/Library/LaunchAgents/org.openbsd.ssh-agent.plist
 ```
 
 On Ubuntu Desktops, surprisingly, you have to
