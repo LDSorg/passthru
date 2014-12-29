@@ -132,9 +132,9 @@ After creating the server, update it and install `fail2ban`.
 
 ```bash
 sudo apt-get update
-sudo apt-get upgrade -y
-
 sudo apt-get install -y fail2ban
+
+sudo apt-get upgrade -y
 ```
 
 Next create a user, add the secure key, then remove
