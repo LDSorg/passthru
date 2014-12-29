@@ -17,11 +17,16 @@
   },
   "homepage": "https://github.com/LDSorg/passthru",
   "dependencies": {
+    "bluebird": "^2.5.1",
     "body-parser": "^1.8.3",
     "connect": "^3.2.0",
     "connect-send-error": "^1.0.3",
     "connect-send-json": "^1.0.0",
+    "request": "^2.51.0",
     "tough-cookie": "^0.12.1",
     "urlrouter": "^0.5.4"
+  },
+  "devDependencies": {
+    "node-uuid": "^1.4.2"
   }
 }
