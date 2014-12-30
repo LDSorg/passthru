@@ -56,161 +56,18 @@ It's pretty safe.
 Setup
 =====
 
-Disallow SSH Keyring Caching
--------------
+Prerequisites (with ScreenCasts)
+-----------
 
-Most of the time you create an ssh key you don't bother adding a passphrase.
-But for an application like this, it's important that you have a specific key
-that uses a passphrase.
+* [Creating your VPS (ScreenCast)](http://youtu.be/ypjzi1axH2A)
+* [Securing Access to VPS (ScreenCast)](http://youtu.be/YZzhIIJmlE0) • [Securing Access to VPS (Article)](https://gist.github.com/coolaj86/8edaa9f5cb913cf442f1))
 
-By default, most operating systems will only ask you to enter in your SSH passphrase
-once and then cache it securely in memory.
+Install & Explanation
+---------------------
 
-If someone gets physical access to your machine, however, they can just open up a
-terminal and log into any server that requires that passphrase without typing it
-in (if you've accessed that machine since the last time the cache was cleared),
-so we'll want to turn that off.
+In practice this requires 3 computers, but for simplicities sake we're going to run the setup on just 2.
 
-On OS X this is fairly straight forward:
-
-```bash
-# OS X
-launchctl unload /System/Library/LaunchAgents/org.openbsd.ssh-agent.plist
-```
-
-On Ubuntu Desktops, surprisingly, you have to
-[go into some GUI settings](http://blogs.bu.edu/mhirsch/2013/09/ubuntu-disable-gnome-keyring-ssh-agent-make-ubuntu-not-remember-ssh-private-key-passwords/)
-and or
-[edit a few config files](http://askubuntu.com/questions/162850/how-to-disable-the-keyring-for-ssh-and-gpg)
-
-Create secure SSH key
--------------
-
-For a project where security is this important I think it's not only important that the
-ssh key be passphrase projected and key caching should be disabled, but also that the
-key should be its own distinct key (otherwise I would get lazy and turn caching back on).
-
-In this case, I'll create a key and call it 'waffles':
-
-```bash
-ssh-keygen
-> Enter file in which to save the key (/Users/strongbad/.ssh/id_rsa): /Users/strongbad/.ssh/waffles
-> Enter passphrase (empty for no passphrase):
-> Enter same passphrase again:
-> Your identification has been saved in /Users/strongbad/.ssh/waffles.
-> Your public key has been saved in /Users/strongbad/.ssh/waffles.pub.
-> The key fingerprint is:
-> ff:9c:38:58:63:cc:f6:d4:fd:94:3e:68:7a:75:74:e0 strongbad@lappy486.local
-> The key's randomart image is:
-> +--[ RSA 2048]----+
-> |                 |
-> |              .  |
-> |             . . |
-> |              E o|
-> |        So   . oo|
-> |         .B . .o+|
-> |         =.+  +.o|
-> |        . .+.= o.|
-> |          .oB   .|
-> +-----------------+
-```
-
-It's important that the **passphrase should be long**.
-You could use something like "Remember to take the trash out this Tuesday!"
-
-If you don't want to forget it you could write it down and stick it in your
-wallet with your grocery list or use a catchphrase from a favorite book or
-TV show or something else creative that hides in plain sight.
-
-What you **don't** want to do is ever put it in a file on your computer or
-write it on a sticky note on your monitor.
-
-Secure the Server
------------------
-
-After creating the server, update it and install `fail2ban`.
-
-```bash
-sudo apt-get update
-sudo apt-get upgrade -y
-
-sudo apt-get install -y fail2ban
-```
-
-Next create a user, add the secure key, then remove
-remove root and password access.
-
-
-```bash
-# remote server
-adduser strongbad
-adduser strongbad sudo # or wheel if sudo doesn't exist
-exit
-```
-
-```bash
-# local laptop
-brew install ssh-copy-id                            # needed on OS X
-ssh-copy-id -i ~/.ssh/waffles "strongbad@example.com -p 22" # this will prompt for the password
-
-ssh strongbad@example.com -i ~/.ssh/waffles -p 22
-> Enter passphrase for key '/Users/coolaj86/.ssh/waffles':
-```
-
-```bash
-# remote server
-sudo vim /etc/ssh/sshd_config
-> PermitRootLogin no
-> PasswordAuthentication no
-sudo service ssh restart
-exit
-```
-
-You could also change Port to 4242 or something creative.
-
-Okay, now the server is reasonably secure from the outside world.
-Now test that you can still log in and that no extraneous services are running.
-
-```bash
-# Local Laptop
-vim ~/.ssh/config
-> Host example.com
-> Port 4242
-> User strongbad
-> IdentityFile ~/.ssh/waffles
-
-ssh example.com
-```
-
-I don't find basic firewalls to be very practical for servers for the average Joe.
-
-If you don't want a remote system to have access to a local service,
-don't expose the service. Simple. Done.
-
-If you aren't a firewall guru then you'll probably do it wrong anyway.
-
-So check to make sure that the only listening service running at this point is ssh:
-
-```bash
-# Remote Server
-sudo netstat -peanut # an easy way to remember those 6 params
-```
-
-You should only see a few sshd instances listening on port 22 or 4242 or whatever.
-If you see anything else, you should probably use a different OS or VPS service that isn't
-setup by default with crap that you don't understand running on public ports.
-
-Don't run WordPress or PHP
------------------
-
-Don't run any additional services other than what you need. Especially,
-don't run WordPress or anything PHP-related. WordPress is the Internet Explorer of Servers.
-It just attracts malware and rootkits.
-
-Start the desired softwares
-------------------
-
-First you're going to create a secret **not on the server**.
+First you're going to create a *secret* **not on the server**.
 
 ```bash
 # Local Laptop
