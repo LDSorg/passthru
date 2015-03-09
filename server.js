@@ -54,6 +54,7 @@ module.exports.create = function (config /*, server*/) {
         }
 
         return db.set(auth.username, auth.password).then(function (token) {
+          auth.password = '[PROTECTED]';
           return { token: token, jar: result.jar, warning: result.warning };
         });
       });
@@ -91,7 +92,7 @@ module.exports.create = function (config /*, server*/) {
       var body = req.body;
 
       login(body).then(function (data) {
-        res.send({ token: data.token, jar: data.jar });
+        res.send({ token: data.token, jar: data.jar, warning: data.warning });
       }, function (errmsg) {
         res.error({ message: errmsg && errmsg.message || errmsg });
       });
