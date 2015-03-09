@@ -39,7 +39,6 @@ function signin(username, password) {
       );
     }
 
-    console.log(body.length);
     if (body.length > 500) {
       warning = "Unexpected login result. LDS.org has updated and this session may not be valid.";
     }
