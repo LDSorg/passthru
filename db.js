@@ -1,36 +1,35 @@
 'use strict';
 
-var PromiseA = require('bluebird').Promise
-  , fs = PromiseA.promisifyAll(require('fs'))
-  , crypto = require('crypto')
-  , cipherType = 'aes-256-cbc'
-  , ENCODING = 'base64'
-  , DECODING = 'utf8'
-  ;
+var PromiseA = require('bluebird').Promise;
+var fs = PromiseA.promisifyAll(require('fs'));
+var crypto = require('crypto');
+var cipherType = 'aes-256-cbc';
+var ENCODING = 'base64';
+var DECODING = 'utf8';
 
 function sha256sum(val) {
   return require('crypto').createHash('sha256').update(val).digest('hex');
 }
 
 function create(opts) {
-  var masterKey = opts.secret
-    , salt = opts.salt
-    , db = {}
-    , cryptFile = '/dev/shm/' + (opts.filename || 'passthru-db.enc.json') + '.' + sha256sum(salt)
-    ;
+  var masterKey = opts.secret;
+  var salt = opts.salt;
+  var db = {};
+  var cryptFile = (opts.filepath || '/dev/shm/')
+                + (opts.filename || 'passthru-db.enc.json')
+                + '.' + sha256sum(salt)
+                ;
 
   opts.cryptFile = cryptFile;
 
   function crypt(key, data) {
-    var cipherer = crypto.createCipher(cipherType, key)
-      ;
+    var cipherer = crypto.createCipher(cipherType, key);
 
     return cipherer.update(data, DECODING, ENCODING) + cipherer.final(ENCODING);
   }
 
   function decrypt(key, data) {
-    var decipherer = crypto.createDecipher(cipherType, key)
-      ;
+    var decipherer = crypto.createDecipher(cipherType, key);
 
     return decipherer.update(data, ENCODING, DECODING) + decipherer.final(DECODING);
   }
@@ -48,11 +47,10 @@ function create(opts) {
     }
   , get: function (token) {
       return new PromiseA(function (resolve, reject) {
-        var k = sha256sum(token)
-          , h = decrypt(masterKey, token)
-          , v = db[k]
-          , auth = JSON.parse(decrypt(h, v))
-          ;
+        var k = sha256sum(token);
+        var h = decrypt(masterKey, token);
+        var v = db[k];
+        var auth = JSON.parse(decrypt(h, v));
 
         if (!v) {
           reject(new Error("entry not found"));
@@ -62,15 +60,13 @@ function create(opts) {
       });
     }
   , set: function (user, pass) {
-      var auth = { username: user, password: pass }
-        ;
+      var auth = { username: user, password: pass };
 
       return new PromiseA(function (resolve) {
-        var h = sha256sum(salt + user + pass)
-          , v = crypt(h, JSON.stringify(auth))
-          , token = crypt(masterKey, h)
-          , k = sha256sum(token)
-          ;
+        var h = sha256sum(salt + user + pass);
+        var v = crypt(h, JSON.stringify(auth));
+        var token = crypt(masterKey, h);
+        var k = sha256sum(token);
 
         db[k] = v;
         resolve(token);
@@ -78,9 +74,8 @@ function create(opts) {
     }
   , expire: function (token) {
       return new PromiseA(function (resolve, reject) {
-        var k = crypt(token)
-          , v = db[k]
-          ;
+        var k = crypt(token);
+        var v = db[k];
 
         if (!v) {
           reject(new Error("entry not found"));
@@ -103,8 +98,7 @@ function create(opts) {
 module.exports.create = create;
 module.exports.test = function (secret, shadow) {
   try {
-    var decipherer = crypto.createDecipher(cipherType, secret)
-      ;
+    var decipherer = crypto.createDecipher(cipherType, secret);
 
     return secret === decipherer.update(shadow, ENCODING, DECODING) + decipherer.final(DECODING);
   } catch(e) {

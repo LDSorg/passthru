@@ -1,16 +1,19 @@
 {
   "name": "passthru",
-  "version": "0.1.0",
+  "version": "1.1.0",
   "description": "Passes authentication to another service securely",
   "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
   },
   "repository": {
     "type": "git",
     "url": "git@github.com:LDSorg/passthru.git"
   },
-  "author": "AJ ONeal",
+  "author": {
+    "name": "AJ ONeal"
+  },
   "license": "Apache2",
   "bugs": {
     "url": "https://github.com/LDSorg/passthru/issues"

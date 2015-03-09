@@ -1,17 +1,15 @@
 'use strict';
 
-var connect = require('connect')
-  , urlrouter = require('urlrouter')
-  , signin = require('./signin').signin
-  , DB = require('./db')
-  , PromiseA = require('bluebird').Promise
-  ;
+var connect = require('connect');
+var urlrouter = require('urlrouter');
+var signin = require('./signin').signin;
+var DB = require('./db');
+var PromiseA = require('bluebird').Promise;
 
 //process.on('uncaughtException', saveAndQuit);
 module.exports.create = function (config /*, server*/) {
-  var app = connect()
-    , db
-    ;
+  var app = connect();
+  var db;
 
   function saveAndQuit() {
     db.save().then(function () {
@@ -24,8 +22,7 @@ module.exports.create = function (config /*, server*/) {
 
   function login(auth, preset) {
     return new PromiseA(function (resolve, reject) {
-      var errmsg
-        ;
+      var errmsg;
 
       // username must be at least 4, password at least 8
       ['username', 'password'].every(function (k) {
@@ -51,13 +48,13 @@ module.exports.create = function (config /*, server*/) {
 
       resolve();
     }).then(function () {
-      return signin(auth.username, auth.password).then(function (jar) {
+      return signin(auth.username, auth.password).then(function (result) {
         if (preset) {
-          return { jar: jar };
+          return { jar: result.jar, warning: result.warning };
         }
 
         return db.set(auth.username, auth.password).then(function (token) {
-          return { token: token, jar: jar };
+          return { token: token, jar: result.jar, warning: result.warning };
         });
       });
     });
@@ -74,8 +71,7 @@ module.exports.create = function (config /*, server*/) {
     }
 
     rest.post('/api/init', function (req, res) {
-      var body = req.body
-        ;
+      var body = req.body;
 
       if (db) {
         res.error({ message: "init already complete" });
@@ -92,8 +88,7 @@ module.exports.create = function (config /*, server*/) {
     });
 
     rest.post('/api/login', requireInit, function (req, res) {
-      var body = req.body
-        ;
+      var body = req.body;
 
       login(body).then(function (data) {
         res.send({ token: data.token, jar: data.jar });
@@ -103,8 +98,7 @@ module.exports.create = function (config /*, server*/) {
     });
 
     rest.post('/api/passthru', requireInit, function (req, res) {
-      var body = req.body
-        ;
+      var body = req.body;
 
       if ('string' !== typeof body.token) {
         res.error({ message: "no token supplied" });
